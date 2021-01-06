@@ -1,5 +1,7 @@
 # Docker & Laravel
-
+  
+## This documentation is for linux operating system   
+  
 ## Installing commands from the beginning
 
   Installing docker and giving user permissinon
@@ -10,7 +12,7 @@
 
   Go to your desired directory where you want to create the projcet and run these commands in terminal from that location.
 
-    git clone git@gitlab.com:insoul-it/insoulit-library/laravel-api/docker-laravel-api.git
+    git clone git@github.com:alpondith/Docker-Laravel-Api.git
 
     cd docker-laravel-api
 
