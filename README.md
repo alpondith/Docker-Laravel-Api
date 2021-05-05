@@ -8,7 +8,8 @@
 
     sudo snap install docker
 
-    sudo chmod 777 /var/run/docker.sock
+    sudo usermod -aG docker your_user_name
+    sudo apt install docker-compose
 
   Go to your desired directory where you want to create the projcet and run these commands in terminal from that location.
 
@@ -25,9 +26,11 @@
     DB_CONNECTION=mysql
     DB_HOST=mysql
     DB_PORT=3306
-    DB_DATABASE=homestead
-    DB_USERNAME=homestead
-    DB_PASSWORD=secret
+    DB_DATABASE=
+    DB_USERNAME=
+    DB_PASSWORD=
+
+  Now set DB_DATABASE , DB_USERNAME , DB_PASSWORD values according to .env values from Docker-Laravel-Api/.env  
 
   Again run below command
 
@@ -45,10 +48,7 @@
     docker-compose ps
     docker-compose up -d
     docker-compose down
-    sudo chmod 777 /var/run/docker.sock
-
-  Each time you turn on your computer freshly then use give permission command.
-
+    docker system prune -a
     sudo chmod 777 /var/run/docker.sock
 
 ## Informations
@@ -57,15 +57,15 @@
 
 - The following are built for our web server, with their exposed ports detailed:
   
-  nginx : 8080
+  nginx : 80
 
   mysql : 3306
   
   php : 9000
 
-- Phpmyadmin link : <http://localhost:8081> . Username : `homestead` , password : `secret`
+- Phpmyadmin link : <http://localhost:8081> . Username : `root` , password : `secret`
 
-- Develompment server link : <http://localhost:8080>
+- Develompment server link : <http://localhost>
 
 - Run any artisan command for laravel like this : `docker-compose run artisan YourCommand`
 
@@ -74,7 +74,3 @@
   Blog link : <https://dev.to/aschmelyun/the-beauty-of-docker-for-local-laravel-development-13c0>
 
   Github link: <https://github.com/aschmelyun/docker-compose-laravel>
-
-## Edocavaj
-
-For more commands list and other important writings visit my blog : <https://edocavaj.com>
