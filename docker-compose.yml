@@ -11,12 +11,14 @@ services:
       dockerfile: nginx.dockerfile
     container_name: nginx
     ports:
-      - "8080:80"
+      - "80:80"
     volumes:
       - ./src:/var/www/html:delegated
     depends_on:
       - php
+      - redis
       - mysql
+      - mailhog
     networks:
       - laravel
 
@@ -28,31 +30,17 @@ services:
     ports:
       - "3306:3306"
     environment:
-      MYSQL_DATABASE: homestead
-      MYSQL_USER: homestead
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: secret
-      SERVICE_TAGS: dev
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
       SERVICE_NAME: mysql
     volumes:
       - ./db:/var/lib/mysql
     networks:
       - laravel
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    restart: always
-    depends_on:
-      - mysql
-    ports:
-      - 8081:80
-    environment:
-      PMA_HOST: mysql
-      MYSQL_ROOT_PASSWORD: secret
-    networks:
-      - laravel
-  
   php:
     build:
       context: .
@@ -62,6 +50,15 @@ services:
       - ./src:/var/www/html:delegated
     ports:
       - "9000:9000"
+    networks:
+      - laravel
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - 6379:6379
     networks:
       - laravel
 
@@ -76,9 +73,19 @@ services:
     depends_on:
       - php
     user: laravel
+    entrypoint: ['composer', '--ignore-platform-reqs']
     networks:
       - laravel
-    entrypoint: ['composer', '--ignore-platform-reqs']
+
+  npm:
+    image: node:13.7
+    container_name: npm
+    volumes:
+      - ./src:/var/www/html
+    working_dir: /var/www/html
+    entrypoint: ['npm']
+    networks:
+      - laravel
 
   artisan:
     build:
@@ -92,5 +99,28 @@ services:
     working_dir: /var/www/html
     user: laravel
     entrypoint: ['php', '/var/www/html/artisan']
+    networks:
+      - laravel
+      
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    depends_on:
+      - mysql
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: mysql
+      MYSQL_USERNAME: '${DB_USERNAME}'
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+    networks:
+      - laravel
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
     networks:
       - laravel
